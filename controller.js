@@ -46,8 +46,13 @@ exports.createRegistration = async (req, res) => {
 
 exports.createAttendee = async (req, res) => {
   try {
+    var uid = req.body.uid;
+    let attendance = await Attendee.findOne({ uid });
     const attendee = new Attendee(req.body);
-    await attendee.save();
+
+    if (!attendance) {
+      await attendee.save();
+    }
     res.status(201).json(attendee);
   } catch (err) {
     res.status(500).json({ error: err.message });
