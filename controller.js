@@ -14,7 +14,7 @@ exports.createRegistration = async (req, res) => {
     const { company, table, person, lucky, uid } = req.body;
 
     // Check for an existing registration with the same UID
-    let registration = await Registration.findOne({ uid });
+    let registration = await Registration.findOne({ company, person });
 
     if (registration) {
       // Update the existing registration with the new values
