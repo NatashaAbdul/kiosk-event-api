@@ -26,7 +26,7 @@ exports.createRegistration = async (req, res) => {
       await registration.save();
 
       return res.status(200).json({
-        message: "Some duplicate(s) found. Registration updated successfully. Please check participant(s).",
+        message: "Some duplicate(s) found. Please check participant(s).",
         registration
       });
     } else {
