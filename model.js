@@ -5,7 +5,11 @@ const registrationSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
-  person: {
+  firstname: {
+    type: String,
+    required: false,
+  },
+  lastname: {
     type: String,
     required: false,
   },
@@ -18,6 +22,10 @@ const registrationSchema = new mongoose.Schema({
     required: false,
   },
   table: {
+    type: String,
+    required: false,
+  },
+  email: {
     type: String,
     required: false,
   },
@@ -31,7 +39,11 @@ const attendeeSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
-  person: {
+  firstname: {
+    type: String,
+    required: false,
+  },
+  lastname: {
     type: String,
     required: false,
   },
@@ -44,6 +56,10 @@ const attendeeSchema = new mongoose.Schema({
     required: false,
   },
   table: {
+    type: String,
+    required: false,
+  },
+  email: {
     type: String,
     required: false,
   },

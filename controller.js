@@ -11,7 +11,7 @@ exports.createRegistration = async (req, res) => {
   // }
   try {
     // Extract data from the request body
-    const { company, table, person, lucky, uid } = req.body;
+    const { company, table, firstname, lastname, lucky, uid, email } = req.body;
 
     // Check for an existing registration with the same UID
     let registration = await Registration.findOne({ company, person });
@@ -20,8 +20,11 @@ exports.createRegistration = async (req, res) => {
       // Update the existing registration with the new values
       registration.company = company;
       registration.table = table;
-      registration.person = person;
+      registration.firstname = firstname;
+      registration.lastname = lastname;
       registration.lucky = lucky;
+      registration.email = email;
+
 
       await registration.save();
 
@@ -31,7 +34,7 @@ exports.createRegistration = async (req, res) => {
       });
     } else {
       // If no duplicate is found, create and save a new registration
-      registration = new Registration({ company, table, person, lucky, uid });
+      registration = new Registration({ company, table, firstname, lastname, lucky, uid, email });
       await registration.save();
 
       return res.status(201).json({
