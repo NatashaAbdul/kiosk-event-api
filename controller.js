@@ -93,7 +93,6 @@ exports.getRegistrationByEmail = async (req, res) => {
       grouped[r.company].push({
         name: r.firstname,
         position: r.lastname,
-        company: r.company,
         table: r.table,
         country: r.email,
       });
