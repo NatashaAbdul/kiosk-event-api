@@ -2,58 +2,38 @@ const { Attendee, Registration } = require("./model");
 const axios = require("axios");
 
 exports.createRegistration = async (req, res) => {
+  // try {
+  //   const registration = new Registration(req.body);
+  //   await registration.save();
+  //   res.status(201).json(registration);
+  // } catch (err) {
+  //   res.status(500).json({ error: err.message });
+  // }
   try {
     // Extract data from the request body
     const { company, table, firstname, lastname, lucky, uid, email } = req.body;
 
-    // Check for an existing registration based on company, firstname, and email
+    // Check for an existing registration with the same UID
     let registration = await Registration.findOne({ company, firstname, email });
 
     if (registration) {
-      // Compare the existing registration with the new data
-      let hasChanges = false;
+      // Update the existing registration with the new values
+      registration.company = company;
+      registration.table = table;
+      registration.firstname = firstname;
+      registration.lastname = lastname; //position
+      registration.lucky = lucky;
+      registration.email = email; //country
 
-      // Update the registration fields only if they have changed
-      if (registration.company !== company) {
-        registration.company = company;
-        hasChanges = true;
-      }
-      if (registration.table !== table) {
-        registration.table = table;
-        hasChanges = true;
-      }
-      if (registration.firstname !== firstname) {
-        registration.firstname = firstname;
-        hasChanges = true;
-      }
-      if (registration.lastname !== lastname) {
-        registration.lastname = lastname;
-        hasChanges = true;
-      }
-      if (registration.lucky !== lucky) {
-        registration.lucky = lucky;
-        hasChanges = true;
-      }
-      if (registration.email !== email) {
-        registration.email = email;
-        hasChanges = true;
-      }
 
-      // If there are changes, save the updated registration
-      if (hasChanges) {
-        await registration.save();
-        return res.status(200).json({
-          message: "Registration updated successfully.",
-          registration
-        });
-      } else {
-        return res.status(200).json({
-          message: "No changes detected. Registration remains the same.",
-          registration
-        });
-      }
+      await registration.save();
+
+      return res.status(200).json({
+        message: "Some duplicate(s) found. Please check participant(s).",
+        registration
+      });
     } else {
-      // If no existing registration is found, create a new one
+      // If no duplicate is found, create and save a new registration
       registration = new Registration({ company, table, firstname, lastname, lucky, uid, email });
       await registration.save();
 
@@ -66,7 +46,6 @@ exports.createRegistration = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-
 
 
 exports.createAttendee = async (req, res) => {
