@@ -78,19 +78,25 @@ exports.getRegistrationByEmail = async (req, res) => {
   }
 
   try {
-    const registrants = await Registration.find({ email: email });
+    const registrants = await Registration.find({ email });
 
     if (registrants.length === 0) {
       return res.status(404).json({ message: 'No registrants found with that email.' });
     }
 
-    // Group by company
+    // Group full employee objects by company
     const grouped = {};
-    registrants.forEach(r => {
+    registrants.forEach((r) => {
       if (!grouped[r.company]) {
         grouped[r.company] = [];
       }
-      grouped[r.company].push(r.firstname);
+      grouped[r.company].push({
+        name: r.firstname,
+        position: r.lastname,
+        company: r.company,
+        table: r.table,
+        country: r.email,
+      });
     });
 
     // Format result
@@ -104,8 +110,6 @@ exports.getRegistrationByEmail = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-
-
 
 exports.getAllAttendee = async (req, res) => {
   try {
