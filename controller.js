@@ -6,14 +6,14 @@ exports.createRegistration = async (req, res) => {
     // Extract data from the request body
     const { company, table, firstname, lastname, lucky, uid, email } = req.body;
 
-    // Check for an existing registration with the same UID (or unique fields like company, firstname, lastname)
+    // Check for an existing registration based on company, firstname, and email
     let registration = await Registration.findOne({ company, firstname, email });
 
     if (registration) {
       // Compare the existing registration with the new data
       let hasChanges = false;
 
-      // Check for changes in each field and update if necessary
+      // Update the registration fields only if they have changed
       if (registration.company !== company) {
         registration.company = company;
         hasChanges = true;
@@ -66,6 +66,7 @@ exports.createRegistration = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
 
 
 exports.createAttendee = async (req, res) => {
