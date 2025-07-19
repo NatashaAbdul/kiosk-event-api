@@ -14,7 +14,7 @@ exports.createRegistration = async (req, res) => {
     const { company, table, firstname, lastname, lucky, uid, email } = req.body;
 
     // Check for an existing registration with the same UID
-let registration = await Registration.findOne({ company, firstname, email });
+    let registration = await Registration.findOne({ company, firstname, lastname });
 
     if (registration) {
       // Update the existing registration with the new values
@@ -46,7 +46,6 @@ let registration = await Registration.findOne({ company, firstname, email });
     res.status(500).json({ error: err.message });
   }
 };
-
 
 exports.createAttendee = async (req, res) => {
   try {
