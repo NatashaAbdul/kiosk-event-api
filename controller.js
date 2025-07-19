@@ -2,38 +2,58 @@ const { Attendee, Registration } = require("./model");
 const axios = require("axios");
 
 exports.createRegistration = async (req, res) => {
-  // try {
-  //   const registration = new Registration(req.body);
-  //   await registration.save();
-  //   res.status(201).json(registration);
-  // } catch (err) {
-  //   res.status(500).json({ error: err.message });
-  // }
   try {
     // Extract data from the request body
     const { company, table, firstname, lastname, lucky, uid, email } = req.body;
 
-    // Check for an existing registration with the same UID
-    let registration = await Registration.findOne({ company, firstname, lastname });
+    // Check for an existing registration with the same UID (or unique fields like company, firstname, lastname)
+    let registration = await Registration.findOne({ company, firstname, email });
 
     if (registration) {
-      // Update the existing registration with the new values
-      registration.company = company;
-      registration.table = table;
-      registration.firstname = firstname;
-      registration.lastname = lastname; //position
-      registration.lucky = lucky;
-      registration.email = email; //country
+      // Compare the existing registration with the new data
+      let hasChanges = false;
 
+      // Check for changes in each field and update if necessary
+      if (registration.company !== company) {
+        registration.company = company;
+        hasChanges = true;
+      }
+      if (registration.table !== table) {
+        registration.table = table;
+        hasChanges = true;
+      }
+      if (registration.firstname !== firstname) {
+        registration.firstname = firstname;
+        hasChanges = true;
+      }
+      if (registration.lastname !== lastname) {
+        registration.lastname = lastname;
+        hasChanges = true;
+      }
+      if (registration.lucky !== lucky) {
+        registration.lucky = lucky;
+        hasChanges = true;
+      }
+      if (registration.email !== email) {
+        registration.email = email;
+        hasChanges = true;
+      }
 
-      await registration.save();
-
-      return res.status(200).json({
-        message: "Some duplicate(s) found. Please check participant(s).",
-        registration
-      });
+      // If there are changes, save the updated registration
+      if (hasChanges) {
+        await registration.save();
+        return res.status(200).json({
+          message: "Registration updated successfully.",
+          registration
+        });
+      } else {
+        return res.status(200).json({
+          message: "No changes detected. Registration remains the same.",
+          registration
+        });
+      }
     } else {
-      // If no duplicate is found, create and save a new registration
+      // If no existing registration is found, create a new one
       registration = new Registration({ company, table, firstname, lastname, lucky, uid, email });
       await registration.save();
 
@@ -46,40 +66,7 @@ exports.createRegistration = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-exports.uploadExcel = async (req, res) => {
-  const { data } = req.body;  // Data from the frontend
 
-  if (!data || data.length === 0) {
-    return res.status(400).json({ error: 'No data received from the file.' });
-  }
-
-  try {
-    for (let row of data) {
-      const { company, table, firstname, lastname, lucky, uid, email } = row;
-
-      // Check for an existing registration with the same details
-      let registration = await Registration.findOne({ company, firstname, email });
-
-      if (registration) {
-        // If a registration already exists, update it with the new data
-        registration.table = table;
-        registration.lucky = lucky;
-        registration.lastname  = lastname;
-        await registration.save();
-      } else {
-        // If no registration exists, create a new one
-        registration = new Registration({ company, table, firstname, lastname, lucky, uid, email });
-        await registration.save();
-      }
-    }
-
-    res.status(200).json({
-      message: 'Registrations have been updated/added successfully.',
-    });
-  } catch (err) {
-    res.status(500).json({ error: 'Error processing the data', details: err.message });
-  }
-};
 
 exports.createAttendee = async (req, res) => {
   try {
