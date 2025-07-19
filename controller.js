@@ -21,9 +21,9 @@ exports.createRegistration = async (req, res) => {
       registration.company = company;
       registration.table = table;
       registration.firstname = firstname;
-      registration.lastname = lastname;
+      registration.lastname = lastname; //position
       registration.lucky = lucky;
-      registration.email = email;
+      registration.email = email; //country
 
 
       await registration.save();
@@ -70,6 +70,42 @@ exports.getAllRegistration = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+exports.getRegistrantsByEmailGroupedByCompany = async (req, res) => {
+  const { email } = req.query;
+
+  if (!email) {
+    return res.status(400).json({ error: 'Email query parameter is required.' });
+  }
+
+  try {
+    const registrants = await Registrant.find({ email: email });
+
+    if (registrants.length === 0) {
+      return res.status(404).json({ message: 'No registrants found with that email.' });
+    }
+
+    // Group by company
+    const grouped = {};
+    registrants.forEach(r => {
+      if (!grouped[r.company]) {
+        grouped[r.company] = [];
+      }
+      grouped[r.company].push(r.firstname);
+    });
+
+    // Format result
+    const result = Object.entries(grouped).map(([company, employees]) => ({
+      company,
+      employees
+    }));
+
+    res.status(200).json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
 
 exports.getAllAttendee = async (req, res) => {
   try {

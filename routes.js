@@ -7,6 +7,7 @@ router.post("/attendee", controller.createAttendee);
 router.get("/attendee", controller.getAllAttendee);
 router.post("/registration", controller.createRegistration);
 router.get("/registration", controller.getAllRegistration);
+router.get('/by-email', registrationController.getRegistrationByEmail);
 router.get("/attendee/:uid", controller.getSingleRegistration);
 router.delete("/registration/:uid", controller.deleteRegistration);
 router.delete("/attendee/:uid", controller.deleteAttendee);
