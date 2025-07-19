@@ -70,7 +70,7 @@ exports.getAllRegistration = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-exports.getRegistrantsByEmailGroupedByCompany = async (req, res) => {
+exports.getRegistrationByEmail = async (req, res) => {
   const { email } = req.query;
 
   if (!email) {
