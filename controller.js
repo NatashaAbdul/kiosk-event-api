@@ -2,55 +2,50 @@ const { Attendee, Registration } = require("./model");
 const axios = require("axios");
 
 exports.createRegistration = async (req, res) => {
+  // try {
+  //   const registration = new Registration(req.body);
+  //   await registration.save();
+  //   res.status(201).json(registration);
+  // } catch (err) {
+  //   res.status(500).json({ error: err.message });
+  // }
   try {
+    // Extract data from the request body
     const { company, table, firstname, lastname, lucky, uid, email } = req.body;
 
-    if (!company || !firstname || !email) {
-      return res.status(400).json({ error: "Missing required fields" });
-    }
-
-    let registration = await Registration.findOne({ company, firstname, email });
+    // Check for an existing registration with the same UID
+let registration = await Registration.findOne({ company, firstname, email });
 
     if (registration) {
-      // Update existing registration
+      // Update the existing registration with the new values
       registration.company = company;
       registration.table = table;
       registration.firstname = firstname;
-      registration.lastname = lastname; //postion
+      registration.lastname = lastname; //position
       registration.lucky = lucky;
-      registration.uid = uid; // update UID
       registration.email = email; //country
+
 
       await registration.save();
 
       return res.status(200).json({
-        message: "Some duplicate(s) found. Registration updated.",
-        registration,
+        message: "Some duplicate(s) found. Please check participant(s).",
+        registration
       });
     } else {
-      // Create new registration
-      const newRegistration = new Registration({
-        company,
-        table,
-        firstname,
-        lastname,
-        lucky,
-        uid,
-        email,
-      });
-
-      await newRegistration.save();
+      // If no duplicate is found, create and save a new registration
+      registration = new Registration({ company, table, firstname, lastname, lucky, uid, email });
+      await registration.save();
 
       return res.status(201).json({
         message: "Registration created successfully.",
-        registration: newRegistration,
+        registration
       });
     }
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
-
 
 
 exports.createAttendee = async (req, res) => {
