@@ -78,7 +78,7 @@ exports.getRegistrationByEmail = async (req, res) => {
   }
 
   try {
-    const registrants = await Registrant.find({ email: email });
+    const registrants = await Registration.find({ email: email });
 
     if (registrants.length === 0) {
       return res.status(404).json({ message: 'No registrants found with that email.' });
