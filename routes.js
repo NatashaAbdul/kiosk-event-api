@@ -9,7 +9,6 @@ router.post("/registration", controller.createRegistration);
 router.get("/registration", controller.getAllRegistration);
 router.get('/by-email', controller.getRegistrationByEmail);
 router.get("/attendee/:uid", controller.getSingleRegistration);
-router.post("/registrationupdate", controller.uploadExcel);
 router.delete("/registration/:uid", controller.deleteRegistration);
 router.delete("/attendee/:uid", controller.deleteAttendee);
 
