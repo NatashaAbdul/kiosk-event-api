@@ -46,6 +46,40 @@ exports.createRegistration = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+exports.uploadExcel = async (req, res) => {
+  const { data } = req.body;  // Data from the frontend
+
+  if (!data || data.length === 0) {
+    return res.status(400).json({ error: 'No data received from the file.' });
+  }
+
+  try {
+    for (let row of data) {
+      const { company, table, firstname, lastname, lucky, uid, email } = row;
+
+      // Check for an existing registration with the same details
+      let registration = await Registration.findOne({ company, firstname, email });
+
+      if (registration) {
+        // If a registration already exists, update it with the new data
+        registration.table = table;
+        registration.lucky = lucky;
+        registration.lastname  = lastname;
+        await registration.save();
+      } else {
+        // If no registration exists, create a new one
+        registration = new Registration({ company, table, firstname, lastname, lucky, uid, email });
+        await registration.save();
+      }
+    }
+
+    res.status(200).json({
+      message: 'Registrations have been updated/added successfully.',
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Error processing the data', details: err.message });
+  }
+};
 
 exports.createAttendee = async (req, res) => {
   try {
